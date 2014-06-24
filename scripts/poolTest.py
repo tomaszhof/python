@@ -4,9 +4,6 @@ import subprocess
 
 from multiprocessing import Pool
 
-def f(x):
-    return x*x
-
 def sendDicom(fname):
     cmdBegin = "~/tools/dcm4/dcm4che-2.0.28/bin/dcmsnd DCM@mdc.scape.psnc.pl:7183 "
     cmdEnd = " -keystore ~/keys/wcpit/wcpit-keystore.jks -keystorepw wcpit. -truststore ~/keys/wcpit/wcpit-truststore.jks -truststorepw wcpit. -tls AES -pdv1 -tcpdelay -releaseTO 10000"
