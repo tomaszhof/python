@@ -13,10 +13,16 @@ def sendDicom(fname):
     command_line = cmdBegin + fname + cmdEnd
     args = [command_line]
     print 'Sending dicom file: ' + fname
-    p = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE).wait()
+    p = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE)
+    p.wait()
     out, err = p.communicate()
-    print 'done.'
-    return 1
+    status = 1
+    msg = 'OK'
+    if 'error' in out:
+	status = 0
+	msg = out
+    print 'done. Status [err]: ' + str(err) 
+    return (status, msg)
 
 def getDicomList(root):
   #count = 0
@@ -31,6 +37,16 @@ def getDicomList(root):
         #   return fnames
   return fnames
 
+def checkStatus(resArr):
+  for r in resArr:
+    (status, msg) = r
+    if (status==0):
+	print '----------------[ERROR BEGIN]--------------\n'
+        print 'MESSAGE: '+msg
+	print '----------------[ERROR END]--------------\n'
+	return 0
+  return 1
+
 def main():
   #step (pool size)
   step = 5
@@ -44,13 +60,16 @@ def main():
   #send by splitting
   currBeg = 0
   currEnd = 0
-  maxL = len(fList)
+  maxL = 20 #len(fList)
   while currEnd < maxL :
     subList = fList[currBeg:currEnd]
     currBeg = currEnd
     currEnd = currEnd + step - 1 
-    print pool.map(sendDicom,subList)
-    print 'Sent ' + str(currEnd + 1) + '/' + str(maxL) + 'files.'
+    resArr = pool.map(sendDicom,subList)
+    status = checkStatus(resArr)
+    print 'Sent ' + str(currEnd) + '/' + str(maxL) + 'files.'
+    if (status == 0):
+      break
 
   rest = maxL - int(maxL/5)*5;
   subList = fList[maxL-rest:maxL] 
