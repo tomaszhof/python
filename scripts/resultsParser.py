@@ -139,8 +139,21 @@ def computeStats(res, resFileName):
   resContent += "Min item sending time: " + str(minItemVec[1]) + "\n"
   resContent += "Min item hdfs saving time: " + str(minItemVec[2]) + "\n"
   resContent += "Min item hbase saving time: " + str(minItemVec[3]) + "\n"
-  resContent += "Min item sftp saving time: " + str(minItemVec[4]) + "\n"
+  resContent += "Min item sftp saving time: " + str(minItemVec[4]) + "\n\n"
  
+
+  #summary
+  allTimeInSec = allTime/1000
+  objPerSec = float(allItemsNo) / allTimeInSec
+  throughputInBytesPerSec = float(allSize) / allTimeInSec
+  maxObjSizeInBytes = maxItemVec[0]
+  minObjSizeInBytes = minItemVec[0]
+  
+  resContent += "Number of objects per second: " + str(objPerSec) + " [obj/s]\n"
+  resContent += "Throughput in bytes per second: " + str(throughputInBytesPerSec) + " [bytes/s]\n"
+  resContent += "Max object size handled in bytes: " + str(maxObjSizeInBytes) + " [bytes]\n"
+  resContent += "Min object size handled in bytes: " + str(minObjSizeInBytes) + " [bytes]\n"
+
   resFile.write(resContent)
   resFile.close()
   
